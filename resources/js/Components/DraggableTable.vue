@@ -8,7 +8,6 @@ import {
 } from '@heroicons/vue/24/solid'
 import Dropdown from './Dropdown.vue'
 import DropdownLink from './DropdownLink.vue'
-import { computed } from 'vue'
 
 const props = defineProps({
     data: Object,

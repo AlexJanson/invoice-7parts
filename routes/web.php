@@ -81,6 +81,7 @@ Route::middleware([
     Route::get('/customer/create', [CustomersController::class, 'create'])->name('customer.create');
     Route::get('/customer/{customer:slug}', [CustomersController::class, 'show'])->name('customer.show')->withTrashed();
     Route::get('/customer/{customer:slug}/edit', [CustomersController::class, 'edit'])->name('customer.edit');
+    Route::put('/customer/{customer:slug}', [CustomersController::class, 'update'])->name('customer.update');
     Route::post('/customers', [CustomersController::class, 'store'])->name('customer.store');
     Route::delete('/customer/{customer:slug}', [CustomersController::class, 'destroy'])->name('customer.destroy');
 
@@ -91,6 +92,7 @@ Route::middleware([
     Route::get('/product/create', [ProductsController::class, 'create'])->name('product.create');
     Route::get('/product/{product:slug}', [ProductsController::class, 'show'])->name('product.show');
     Route::get('/product/{product:slug}/edit', [ProductsController::class, 'edit'])->name('product.edit');
+    Route::put('/product/{product:slug}', [ProductsController::class, 'update'])->name('product.update');
     Route::post('/products', [ProductsController::class, 'store'])->name('product.store');
     Route::delete('/product/{product:slug}', [ProductsController::class, 'destroy'])->name('product.destroy');
 

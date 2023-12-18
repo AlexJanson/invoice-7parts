@@ -139,6 +139,7 @@ watch(selectedProduct, (value) => {
     item.description = value.description
     item.price = value.price
     item.tax = value.tax
+    item.unit = units.find((unit) => unit.unit === value.unit)
 })
 
 const displayUnit = (unit) =>
@@ -191,7 +192,7 @@ const total = computed(() =>
                     >
                         <div class="col-span-4 flex">
                             <Squares2X2Icon
-                                class="handle h-5 w-5 shrink-0"
+                                class="handle h-5 w-5 shrink-0 cursor-grab"
                                 :class="{
                                     hidden: !editable,
                                 }"
@@ -346,7 +347,7 @@ const total = computed(() =>
             >
         </div>
 
-        <DialogModal :show="showModal && editable" @close="">
+        <DialogModal :show="showModal && editable" @close="showModal = false">
             <template #title> Factuurregel toevoegen </template>
 
             <template #content>
@@ -402,7 +403,7 @@ const total = computed(() =>
                         label="Eenheid"
                     />
                     <MoneyField v-model="item.price" label="Prijs" />
-                    <PercentageField v-model="item.tax" label="BTW" />
+                    <PercentageField v-model="item.tax" label="BTW %" />
                 </div>
             </template>
 

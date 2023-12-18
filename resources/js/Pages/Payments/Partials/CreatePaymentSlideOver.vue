@@ -53,7 +53,6 @@ function submit() {
         .post(route('payment.store'), {
             onSuccess: () => {
                 paymentForm.value.form.reset()
-                router.replace(route('payments.index'))
                 slideOver.value.close()
             },
         })

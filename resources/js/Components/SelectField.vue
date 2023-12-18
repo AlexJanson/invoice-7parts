@@ -22,6 +22,11 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    customValues: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
     displayValue: {
         type: Function,
         required: true,
@@ -48,6 +53,11 @@ const emit = defineEmits(['update:modelValue'])
 const selected = ref(modelValue)
 const query = ref('')
 
+const customOption = computed(() =>
+    // TODO: make this a prop so that we can use the same display function
+    query.value === '' ? {} : { id: -1, month: query.value },
+)
+
 const filtered = computed(() =>
     query.value === ''
         ? values.value
@@ -63,6 +73,7 @@ const filtered = computed(() =>
 <template>
     <div>
         <Combobox
+            immediate
             :model-value="selected"
             @update:model-value="
                 (value) => emit('update:modelValue', value ?? null)
@@ -120,12 +131,22 @@ const filtered = computed(() =>
                         class="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     >
                         <div
-                            v-if="filtered.length === 0 && query !== ''"
+                            v-if="
+                                filtered.length === 0 &&
+                                query !== '' &&
+                                !customValues
+                            "
                             class="relative grid cursor-default select-none place-items-center px-4 py-2 text-sm text-gray-700"
                         >
                             <Searching class="h-32 w-32" />
                             <span class="mt-2">Niets gevonden.</span>
                         </div>
+
+                        <ComboboxOption
+                            v-if="customValues"
+                            :value="customOption"
+                        >
+                        </ComboboxOption>
 
                         <ComboboxOption
                             v-for="item in filtered"

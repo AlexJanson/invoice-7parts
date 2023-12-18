@@ -55,14 +55,29 @@ function setOpen(value) {
 }
 
 function submit() {
-    console.log('TODO: submit the form')
+    productForm.value.form
+        .transform((data) => ({
+            ...data,
+            unit: data.unit.unit,
+        }))
+        .put(
+            route('product.update', {
+                product: product.value,
+            }),
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    productForm.value.form.reset()
+                    slideOver.value.close()
+                },
+            },
+        )
 }
 
 onMounted(() => {
     if (!product.value) return
 
     const p = toReactive(product)
-    console.log(product.value)
 
     // Next tick to have customerForm be defined.
     nextTick(() => {

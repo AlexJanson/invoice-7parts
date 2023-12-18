@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Invoice;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class StorePaymentRequest extends FormRequest
 {
@@ -21,9 +23,19 @@ class StorePaymentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $invoiceId = request()->input('invoice_id');
+        $validated = request()->validate([
+            'amount' => 'numeric|min:1|required'
+        ]);
+        $invoice = Invoice::find($invoiceId);
+        if ($validated['amount'] > $invoice->dueAmount)
+            throw ValidationException::withMessages([
+                'amount' => ["Cannot be higher then the due amount."]
+            ]);
+
         return [
             'payment_date' => 'required|date',
-            'amount' => 'required|min:0|numeric',
+            'amount' => 'required|min:1|numeric',
             'comments' => 'nullable|string',
             'invoice_id' => 'required|exists:invoices,id',
             'customer_id' => 'required|exists:users,id'

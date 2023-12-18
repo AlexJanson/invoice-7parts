@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\StoreProduct;
+use App\Actions\UpdateProduct;
+use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
 use App\Traits\WithSort;
 
@@ -42,19 +45,29 @@ class ProductsController extends Controller
             ]);
     }
 
-    public function destroy(Product $product)
-    {
-        $product->delete();
-        return back();
-    }
-
     public function create()
     {
         return $this->index();
     }
 
-    public function store(/* StoreProductRequest $request, StoreProduct $storeProduct */)
+    public function update(StoreProductRequest $request, Product $product, UpdateProduct $updateProduct)
     {
-        dd('TODO: store the product');
+        $updateProduct->handle($request, $product);
+
+        return to_route('products.index');
+    }
+
+    public function store(StoreProductRequest $request, StoreProduct $storeProduct)
+    {
+        $storeProduct->handle($request);
+
+        return to_route('products.index');
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->delete();
+        
+        return to_route('products.index');
     }
 }

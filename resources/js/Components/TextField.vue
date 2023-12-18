@@ -50,7 +50,7 @@ const emit = defineEmits(['update:modelValue'])
             class="w-full resize-none rounded-md border-gray-300 py-1.5 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:!rounded-r scrollbar-track:!bg-zinc-200 scrollbar-thumb:!rounded scrollbar-thumb:!bg-zinc-400"
         ></textarea>
 
-        <div class="mt-2 text-sm text-red-600" v-if="error">
+        <div class="mt-2 text-sm text-red-600" v-show="error">
             {{ error }}
         </div>
     </div>

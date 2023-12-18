@@ -63,9 +63,13 @@ function submit() {
             customer_id: data.customer_id.id,
             invoice_id: data.invoice_id.id,
         }))
-        .put(route('payment.update', { payment: props.payment }))
-
-    console.log('TODO: submit the form', paymentForm.value.form.data())
+        .put(route('payment.update', { payment: props.payment }), {
+            preserveState: true,
+            onSuccess: () => {
+                paymentForm.value.form.reset()
+                slideOver.value.close()
+            },
+        })
 }
 
 onMounted(() => {

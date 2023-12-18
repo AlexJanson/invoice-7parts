@@ -66,15 +66,28 @@ const contactDefaults = {
     default: false,
 }
 function addContact() {
-    form.contacts.push(structuredClone(contactDefaults))
+    const newContact = structuredClone(contactDefaults)
+
+    if (selectedPerson.value === null) {
+        selectedPerson.value = newContact
+    }
+
+    form.contacts.push(newContact)
 }
 function deleteContact(idx) {
     form.contacts.splice(idx, 1)
 }
 const selectedPerson = ref(null)
 watch(selectedPerson, (newContact, oldContact) => {
-    if (oldContact) oldContact.default = 0
-    newContact.default = 1
+    if (oldContact) {
+        const old = form.contacts.find(
+            (contact) => contact.id === oldContact.id,
+        )
+        old.default = 0
+    }
+
+    const target = form.contacts.find((contact) => contact.id === newContact.id)
+    target.default = 1
 })
 
 defineExpose({
@@ -98,11 +111,31 @@ defineExpose({
         </h3>
 
         <div class="grid grid-cols-2 gap-8">
-            <TextField v-model="form.name" label="Naam" />
-            <TextField v-model="form.email" label="Email" />
-            <TextField v-model="form.phone" label="Telefoon" />
-            <TextField v-model="form.tax_number" label="BTW" />
-            <TextField v-model="form.kvk_number" label="KVK" />
+            <TextField
+                v-model="form.name"
+                :error="form.errors.name"
+                label="Naam"
+            />
+            <TextField
+                v-model="form.email"
+                :error="form.errors.email"
+                label="Email"
+            />
+            <TextField
+                v-model="form.phone"
+                :error="form.errors.phone"
+                label="Telefoon"
+            />
+            <TextField
+                v-model="form.tax_number"
+                :error="form.errors.tax_number"
+                label="BTW"
+            />
+            <TextField
+                v-model="form.kvk_number"
+                :error="form.errors.kvk_number"
+                label="KVK"
+            />
         </div>
     </div>
 
@@ -121,14 +154,31 @@ defineExpose({
         <h4 class="mb-8 text-lg font-semibold">Vestigingsadres</h4>
 
         <div class="mb-8 grid grid-cols-2 gap-8">
-            <TextField v-model="form.shippingAddress.address" label="Adres" />
+            <TextField
+                v-model="form.shippingAddress.address"
+                :error="form.errors['shippingAddress.address']"
+                label="Adres"
+            />
             <TextField
                 v-model="form.shippingAddress.zipcode"
+                :error="form.errors['shippingAddress.zipcode']"
                 label="Postcode"
             />
-            <TextField v-model="form.shippingAddress.city" label="Plaatsnaam" />
-            <TextField v-model="form.shippingAddress.state" label="Provincie" />
-            <TextField v-model="form.shippingAddress.country" label="Land" />
+            <TextField
+                v-model="form.shippingAddress.city"
+                :error="form.errors['shippingAddress.city']"
+                label="Plaatsnaam"
+            />
+            <TextField
+                v-model="form.shippingAddress.state"
+                :error="form.errors['shippingAddress.state']"
+                label="Provincie"
+            />
+            <TextField
+                v-model="form.shippingAddress.country"
+                :error="form.errors['shippingAddress.country']"
+                label="Land"
+            />
         </div>
 
         <hr />
@@ -138,26 +188,31 @@ defineExpose({
         <div class="grid grid-cols-2 gap-8" v-if="!sameAsShippingAddress">
             <TextField
                 v-model="form.billingAddress.address"
+                :error="form.errors['billingAddress.address']"
                 label="Adres"
                 :disabled="sameAsShippingAddress"
             />
             <TextField
                 v-model="form.billingAddress.zipcode"
+                :error="form.errors['billingAddress.zipcode']"
                 label="Postcode"
                 :disabled="sameAsShippingAddress"
             />
             <TextField
                 v-model="form.billingAddress.city"
+                :error="form.errors['billingAddress.city']"
                 label="Plaatsnaam"
                 :disabled="sameAsShippingAddress"
             />
             <TextField
                 v-model="form.billingAddress.state"
+                :error="form.errors['billingAddress.state']"
                 label="Provincie"
                 :disabled="sameAsShippingAddress"
             />
             <TextField
                 v-model="form.billingAddress.country"
+                :error="form.errors['billingAddress.country']"
                 label="Land"
                 :disabled="sameAsShippingAddress"
             />
@@ -237,16 +292,19 @@ defineExpose({
             <TextField
                 class="grow"
                 v-model="form.contacts[idx].name"
+                :error="form.errors[`contacts.${idx}.name`]"
                 label="Naam"
             />
             <TextField
                 class="grow"
                 v-model="form.contacts[idx].email"
+                :error="form.errors[`contacts.${idx}.email`]"
                 label="Email"
             />
             <TextField
                 class="grow"
                 v-model="form.contacts[idx].phone"
+                :error="form.errors[`contacts.${idx}.phone`]"
                 label="Telefoon"
             />
 
@@ -335,15 +393,6 @@ defineExpose({
                                         ]"
                                         >{{ contact.name }}</span
                                     >
-                                    <span
-                                        v-if="selected"
-                                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-indigo-600"
-                                    >
-                                        <CheckIcon
-                                            class="h-5 w-5"
-                                            aria-hidden="true"
-                                        />
-                                    </span>
                                 </li>
                             </ListboxOption>
                         </ListboxOptions>

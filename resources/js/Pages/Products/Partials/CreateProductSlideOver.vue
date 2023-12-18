@@ -43,7 +43,18 @@ function setOpen(value) {
 }
 
 function submit() {
-    console.log('TODO: submit the form')
+    productForm.value.form
+        .transform((data) => ({
+            ...data,
+            unit: data.unit.unit,
+        }))
+        .post(route('product.store'), {
+            preserveState: true,
+            onSuccess: () => {
+                productForm.value.form.reset()
+                slideOver.value.close()
+            },
+        })
 }
 
 defineExpose({

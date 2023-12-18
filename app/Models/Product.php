@@ -21,6 +21,8 @@ class Product extends Model
         'created_at' => IsoDate::class
     ];
 
+    protected $guarded = [];
+
     public function priceInclTax(): Attribute
     {
         return Attribute::get(function () {

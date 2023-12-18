@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\StoreCustomer;
+use App\Actions\UpdateCustomer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Models\Customer;
 use App\Models\Invoice;
@@ -61,7 +62,6 @@ class CustomersController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        dd($customer);
     }
 
     public function create()
@@ -69,11 +69,18 @@ class CustomersController extends Controller
         return $this->index();
     }
 
+    public function update(StoreCustomerRequest $request, Customer $customer, UpdateCustomer $updateCustomer)
+    {
+        $updateCustomer->handle($request, $customer);
+
+        return to_route('customers.index');
+    }
+
     public function store(StoreCustomerRequest $request, StoreCustomer $storeCustomer)
     {
-        dd($request);
         $storeCustomer->handle($request);
-        // dd(request()->all());
+
+        return to_route('customers.index');
     }
 
     public function getInvoices(Customer $customer)

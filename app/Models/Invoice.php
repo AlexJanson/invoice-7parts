@@ -16,6 +16,10 @@ class Invoice extends Model
 
     const PAGINATE_AMOUNT = 8;
 
+    const STATUS_UNPAID = 'UNPAID';
+    const STATUS_PARTIALLY_PAID = 'PARTIALLY PAID';
+    const STATUS_PAID = 'PAID';
+
     protected $casts = [
         'invoice_date' => IsoDate::class,
         'due_date' => IsoDate::class
@@ -24,6 +28,8 @@ class Invoice extends Model
     protected $appends = [
         'due_amount'
     ];
+
+    protected $guarded = [];
 
     public function customer() 
     {
@@ -71,12 +77,23 @@ class Invoice extends Model
     public function dueAmount(): Attribute
     {
         return Attribute::get(function () {
-            return $this->total - $this->payments->sum('amount'); 
+            return floor($this->total) - $this->payments->sum('amount'); 
         });
     }
 
-    public function scopeDueInvoices(Builder $query) 
+    public function updatePaymentStatus()
     {
-        $query->whereDate('due_date', '<', Carbon::today()->toDateString())->where('payment_status', '!=', Payment::STATUS_PAID);
+        if (floor($this->total) == $this->dueAmount) {
+            $this->update(['payment_status' => Invoice::STATUS_UNPAID]);
+        } else if ($this->dueAmount > 0) {
+            $this->update(['payment_status' => Invoice::STATUS_PARTIALLY_PAID]);
+        } else if ($this->dueAmount <= 0) {
+            $this->update(['payment_status' => Invoice::STATUS_PAID]);
+        }
+    }
+
+    public function scopeDueInvoices(Builder $query)
+    {
+        $query->whereDate('due_date', '<', Carbon::today()->toDateString())->where('payment_status', '!=', Invoice::STATUS_PAID);
     }
 }

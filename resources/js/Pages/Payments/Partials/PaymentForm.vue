@@ -6,9 +6,11 @@ import SelectField from '@/Components/SelectField.vue'
 import TextField from '@/Components/TextField.vue'
 import DatePicker from '@/Components/DatePicker.vue'
 import MoneyField from '@/Components/MoneyField.vue'
+import { startOfToday } from 'date-fns'
 
+const today = startOfToday()
 const form = useForm({
-    payment_date: null,
+    payment_date: today,
     customer_id: null,
     invoice_id: null,
     amount: 0,

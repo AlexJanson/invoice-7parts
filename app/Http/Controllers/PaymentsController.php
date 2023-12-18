@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\StorePayment;
+use App\Actions\UpdatePayment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\Customer;
 use App\Models\Payment;
@@ -59,20 +60,24 @@ class PaymentsController extends Controller
             ]);
     }
 
-    public function update(StorePaymentRequest $request, Payment $payment)
+    public function update(StorePaymentRequest $request, Payment $payment, UpdatePayment $updatePayment)
     {
-        dd($request->validated());
-        $payment->update(request()->all());
+        $updatePayment->handle($request, $payment);
+
+        return to_route('payments.index');
     }
 
     public function store(StorePaymentRequest $request, StorePayment $storePayment)
     {
         $storePayment->handle($request);
+
+        return to_route('payments.index');
     }
 
     public function destroy(Payment $payment)
     {
         $payment->delete();
-        return back();
+
+        return to_route('payments.index');
     }
 }

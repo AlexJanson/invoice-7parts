@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import {
     CalendarIcon,
@@ -14,7 +14,6 @@ import {
     parse,
     eachDayOfInterval,
     endOfMonth,
-    startOfMonth,
     startOfWeek,
     endOfWeek,
     isSameMonth,

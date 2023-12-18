@@ -14,11 +14,24 @@ class Payment extends Model
 
     const PAGINATE_AMOUNT = 8;
 
-    const STATUS_UNPAID = 'UNPAID';
-    const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
-    const STATUS_PAID = 'PAID';
-
     protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function (Payment $payment) {
+            $payment->invoice->updatePaymentStatus();
+        });
+
+        static::updated(function (Payment $payment) {
+            $payment->invoice->updatePaymentStatus();
+        });
+
+        static::deleted(function (Payment $payment) {
+            $payment->invoice->updatePaymentStatus();
+        });
+    }
 
     protected $casts = [
         'payment_date' => IsoDate::class

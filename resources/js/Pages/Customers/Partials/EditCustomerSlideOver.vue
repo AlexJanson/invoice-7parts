@@ -54,7 +54,13 @@ function setOpen(value) {
 }
 
 function submit() {
-    console.log('TODO: submit the form')
+    customerForm.value.form.put(
+        route('customer.update', { customer: customer.value }),
+        {
+            preserveState: true,
+            onSuccess: () => slideOver.value.close(),
+        },
+    )
 }
 
 onMounted(() => {

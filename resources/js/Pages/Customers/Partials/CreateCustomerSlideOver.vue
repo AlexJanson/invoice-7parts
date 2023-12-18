@@ -43,7 +43,21 @@ function setOpen(value) {
 }
 
 function submit() {
-    console.log('TODO: submit the form', customerForm.data())
+    if (customerForm.value.sameAsShippingAddress) {
+        customerForm.value.form.transform((data) => ({
+            ...data,
+            billingAddress: {
+                ...data.shippingAddress,
+            },
+        }))
+    } else {
+        customerForm.value.form.transform((data) => data)
+    }
+
+    customerForm.value.form.post(route('customer.store'), {
+        preserveState: true,
+        onSuccess: () => slideOver.value.close(),
+    })
 }
 
 defineExpose({

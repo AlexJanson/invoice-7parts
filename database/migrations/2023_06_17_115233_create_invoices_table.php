@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('due_date');
             $table->string('reference', 25)->nullable();
             $table->string('term')->nullable();
+            $table->integer('year')->nullable();
             $table->enum('status', ['DRAFT', 'SENT', 'COMPLETED']);
             $table->enum('payment_status', ['UNPAID', 'PARTIALLY PAID', 'PAID']);
             $table->enum('discount_type', ['PERCENTAGE', 'FIXED']);
