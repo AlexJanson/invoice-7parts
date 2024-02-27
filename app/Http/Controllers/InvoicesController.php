@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\StoreInvoice;
+use App\Actions\UpdateInvoice;
+use App\Http\Requests\StoreInvoiceRequest;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Traits\WithSort;
-use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoicesController extends Controller
 {
@@ -36,10 +39,19 @@ class InvoicesController extends Controller
 
     public function create()
     {
+        $lastInvoiceNumberFromDatabase = Invoice::
+            withTrashed()
+            ->where('invoice_number', 'like', date('Y') . '%')
+            ->max('invoice_number');
+        if ($lastInvoiceNumberFromDatabase)
+            $lastInvoiceNumberFromDatabase = strval(++$lastInvoiceNumberFromDatabase);
+        $invoiceNumber = $lastInvoiceNumberFromDatabase ?? date('Y') . '0001';
+
         return $this->index()
             ->with([
                 'customers' => Customer::all(),
-                'products' => Product::all()
+                'products' => Product::all(),
+                'invoiceNumber' => $invoiceNumber
             ]);
     }
 
@@ -47,7 +59,7 @@ class InvoicesController extends Controller
     {
         return inertia('Invoices/Show', [
             'invoice' => $invoice
-                ->load(['customer', 'customer.shippingAddress', 'customer.mainContact', 'items'])
+                ->load(['customer', 'customer.shippingAddress', 'customer.contacts', 'items'])
                 ->append(['total', 'subtotal', 'tax'])
         ]);
     }
@@ -56,20 +68,62 @@ class InvoicesController extends Controller
     {
         return $this->index()
             ->with([
-                'invoice' => $invoice->load(['items', 'customer', 'contact']),
+                'invoice' => $invoice->load(['items', 'customer', 'contact'])->append(['total', 'subtotal', 'tax']),
                 'customers' => Customer::all(),
-                'products' => Product::all()
+                'products' => Product::all(),
+                'payments' => $invoice->payments
             ]);
     }
 
-    public function store(/* StoreInvoiceRequest $request, StoreInvoice $storeInvoice */)
+    public function update(StoreInvoiceRequest $request, Invoice $invoice, UpdateInvoice $updateInvoice)
     {
-        // dd($request)
+        $updateInvoice->handle($request, $invoice);
+
+        return to_route('invoices.index');
+    }
+
+    public function store(StoreInvoiceRequest $request, StoreInvoice $storeInvoice)
+    {
+        $storeInvoice->handle($request);
+
+        return to_route('invoices.index');
+    }
+
+    public function restore(Invoice $invoice)
+    {
+        $invoice->restore();
+        return back();
     }
 
     public function destroy(Invoice $invoice)
     {
         $invoice->delete();
         return back();
+    }
+
+    public function createPayment(Invoice $invoice)
+    {
+        return $this->index()->with([
+            'invoice' => $invoice,
+            'customers' => Customer::all()
+        ]);
+    }
+
+    public function download(Invoice $invoice)
+    {
+        $pdf = Pdf::loadView('pdf.invoice', [
+            "invoice" => $invoice->load(['customer.shippingAddress']),
+            "noAddress" => null
+        ]);
+        return $pdf->download('Factuur ' . $invoice->invoice_number . ' ' . $invoice->customer->name . '.pdf');
+    }
+
+    public function stream(Invoice $invoice)
+    {
+        $pdf = Pdf::loadView('pdf.invoice', [
+            "invoice" => $invoice->load(['customer.shippingAddress']),
+            "noAddress" => null
+        ]);
+        return $pdf->stream();
     }
 }

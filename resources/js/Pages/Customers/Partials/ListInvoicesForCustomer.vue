@@ -50,8 +50,8 @@ const invoices = {
 <template>
     <OrderedTable :data="invoices">
         <template v-slot="{ current }">
-            <td>{{ current.invoice_date }}</td>
-            <td class="font-semibold">
+            <td class="pl-2">{{ current.invoice_date }}</td>
+            <td class="pl-2 font-semibold">
                 <Link
                     class="underline"
                     :href="
@@ -63,9 +63,13 @@ const invoices = {
                     #{{ current.invoice_number }}
                 </Link>
             </td>
-            <td><PaymentStatusIcon :status="current.payment_status" /></td>
-            <td class="font-semibold">{{ formatMoney(current.due_amount) }}</td>
-            <td class="font-semibold" align="right">
+            <td class="pl-2">
+                <PaymentStatusIcon :status="current.payment_status" />
+            </td>
+            <td class="pl-2 font-semibold">
+                {{ formatMoney(current.due_amount) }}
+            </td>
+            <td class="pr-4 font-semibold" align="right">
                 {{ formatMoney(current.total) }}
             </td>
         </template>

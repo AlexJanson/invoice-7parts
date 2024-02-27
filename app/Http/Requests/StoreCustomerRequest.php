@@ -25,7 +25,7 @@ class StoreCustomerRequest extends FormRequest
             "name" => "required|min:3|max:50",
             "email" => "required|max:50|email",
             "phone" => "required|min:8|max:25",
-            "tax_number" => "required|max:20",
+            "tax_number" => "nullable|max:20",
             "kvk_number" => "nullable|size:8",
             "shippingAddress.address" => "required|max:50",
             "shippingAddress.zipcode" => "required|max:10",
@@ -39,9 +39,8 @@ class StoreCustomerRequest extends FormRequest
             "billingAddress.country" => "required|max:35",
             "contacts.*.id" => "nullable|numeric",
             "contacts.*.name" => "required|min:3|max:50",
-            "contacts.*.email" => "required|max:50|email",
-            "contacts.*.phone" => "required|min:8|max:25",
-            "contacts.*.default" => "required|boolean"
+            "contacts.*.email" => "nullable|max:50|email",
+            "contacts.*.phone" => "nullable|min:8|max:25"
         ];
      }
 }

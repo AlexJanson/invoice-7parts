@@ -11,7 +11,7 @@ class Customer extends Model
 {
     use HasFactory, SoftDeletes;
 
-    const PAGINATE_AMOUNT = 8;
+    const PAGINATE_AMOUNT = 50;
 
     public function invoices()
     {
@@ -33,15 +33,15 @@ class Customer extends Model
         return $this->hasMany(Contact::class);
     }
 
-    public function mainContact()
-    {
-        return $this->contacts()->one()->where('default', '1');
-    }
+    // public function mainContact()
+    // {
+    //     return $this->contacts()->one()->where('default', '1');
+    // }
 
-    public function otherContacts()
-    {
-        return $this->contacts()->where('default', '0');
-    }
+    // public function otherContacts()
+    // {
+    //     return $this->contacts()->where('default', '0');
+    // }
 
     public function dueAmount(): Attribute
     {

@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -22,6 +24,12 @@ return new class extends Migration
             $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
         });
+
+        User::firstOrCreate([
+            'name' => 'Marcel Janson',
+            'email' => 'm.janson@7parts.nl',
+            'password' => Hash::make('admin')
+        ]);
     }
 
     /**

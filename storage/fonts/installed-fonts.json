@@ -1,0 +1,9 @@
+{
+    "nunito": {
+        "300": "\/var\/www\/html\/storage\/fonts\/nunito_300_ed16c859231e9de60529ee8e2539295f",
+        "normal": "\/var\/www\/html\/storage\/fonts\/nunito_normal_ee99570c2d40db4ca7cb27ecfa07bd0e",
+        "500": "\/var\/www\/html\/storage\/fonts\/nunito_500_1337283c03afe8faf9193502488bd31d",
+        "600": "\/var\/www\/html\/storage\/fonts\/nunito_600_462968132f9bb0b300c9ac89cb99aa5d",
+        "bold": "nunito_bold_8878d120ae1cf02db589138e103b16c4"
+    }
+}

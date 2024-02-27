@@ -18,7 +18,7 @@ import SelectField from '@/Components/SelectField.vue'
 import MoneyField from '@/Components/MoneyField.vue'
 import TextField from '@/Components/TextField.vue'
 import Dropdown from '@/Components/Dropdown.vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, usePage } from '@inertiajs/vue3'
 import { computed, ref, toRefs, watch } from 'vue'
 import { formatMoney } from '@/helpers'
 import { format } from 'v-money3'
@@ -58,7 +58,9 @@ const item = useForm({
     },
     price: 0,
     total: 0,
-    tax: 0,
+    tax: 21,
+    discount: 0,
+    subtotal: 0,
 })
 
 const items = ref(modelValue)
@@ -82,14 +84,19 @@ function closeModal() {
 
 function addItem() {
     // transform the data
-    item.total = (item.tax + 100) * (item.price / 100) * (item.quantity / 100)
+    const subtotal = parseFloat((item.price / 100) * (item.quantity / 100))
+    item.total = parseFloat(
+        ((item.tax + 100) * (subtotal * (1 - item.discount / 100))).toFixed(2),
+    )
+    item.subtotal = parseFloat((100 * subtotal).toFixed(2))
 
     item.clearErrors()
 
-    console.log(item.data())
-
     editing.value
-        ? (items.value[editingIdx.value] = item.data())
+        ? (items.value[editingIdx.value] = {
+              ...items.value[editingIdx.value],
+              ...item.data(),
+          })
         : items.value.push(item.data())
 
     // Reset the inputs
@@ -107,7 +114,6 @@ function deleteItem(idx) {
 const editing = ref(false)
 const editingIdx = ref(null)
 function editItem(current, idx) {
-    console.log(current, idx)
     item.name = current.name
     item.description = current.description
     item.quantity = current.quantity
@@ -117,6 +123,7 @@ function editItem(current, idx) {
     item.price = current.price
     item.total = current.total
     item.tax = current.tax
+    item.discount = current.discount
 
     editing.value = true
     editingIdx.value = idx
@@ -151,30 +158,37 @@ const displayUnit = (unit) =>
 
 const subtotal = computed(() =>
     items.value.reduce(
-        (carry, item) => (carry += item.price * (item.quantity / 100)),
+        (carry, item) =>
+            (carry +=
+                item.price * (item.quantity / 100) * (1 - item.discount / 100)),
         0,
     ),
 )
 const tax = computed(() =>
-    items.value.reduce(
-        (carry, item) =>
-            (carry += item.tax * ((item.price / 100) * (item.quantity / 100))),
-        0,
+    Math.round(
+        items.value.reduce(
+            (carry, item) =>
+                (carry +=
+                    item.tax *
+                    ((item.price / 100) *
+                        (item.quantity / 100) *
+                        (1 - item.discount / 100))),
+            0,
+        ),
     ),
 )
 const discount = ref(props.discount)
-const total = computed(() =>
-    formatMoney(subtotal.value + tax.value - discount.value),
-)
+const total = computed(() => formatMoney(tax.value + subtotal.value))
 </script>
 
 <template>
     <div>
         <template v-if="items.length > 0">
             <div class="mb-2 grid grid-cols-12 px-5 text-sm text-gray-600">
-                <h3 class="col-span-4">Items</h3>
+                <h3 class="col-span-3">Items</h3>
                 <h3 class="col-span-2 text-center">Aantal</h3>
                 <h3 class="col-span-2 text-center">Prijs</h3>
+                <h3 class="col-span-1 text-center">Korting (%)</h3>
                 <h3 class="col-span-1 text-right">BTW</h3>
                 <h3 class="col-span-2 text-right">Totaal</h3>
             </div>
@@ -190,7 +204,7 @@ const total = computed(() =>
                         :key="item.name"
                         class="grid grid-cols-12 content-start gap-2 p-5"
                     >
-                        <div class="col-span-4 flex">
+                        <div class="col-span-3 flex">
                             <Squares2X2Icon
                                 class="handle h-5 w-5 shrink-0 cursor-grab"
                                 :class="{
@@ -217,12 +231,16 @@ const total = computed(() =>
                             formatMoney(item.price)
                         }}</span>
 
+                        <span class="text-center"> {{ item.discount }} % </span>
+
                         <span class="col-span-1 text-right"
                             >{{ item.tax }} %</span
                         >
 
                         <span class="col-span-2 text-right">{{
-                            formatMoney(item.total)
+                            formatMoney(
+                                item.subtotal * (1 - item.discount / 100),
+                            )
                         }}</span>
 
                         <div
@@ -326,7 +344,7 @@ const total = computed(() =>
             /> -->
             <span class="col-span-2 text-right">{{ formatMoney(tax) }}</span>
 
-            <span class="col-start-9 mt-4">Korting</span>
+            <!-- <span class="col-start-9 mt-4">Korting</span>
             <MoneyField
                 v-if="editable"
                 v-model="discount"
@@ -338,7 +356,7 @@ const total = computed(() =>
             />
             <span v-if="!editable" class="col-span-2 text-right">{{
                 formatMoney(discount)
-            }}</span>
+            }}</span> -->
 
             <span class="col-start-9 mt-8 text-lg font-semibold">Totaal</span>
             <span
@@ -404,6 +422,10 @@ const total = computed(() =>
                     />
                     <MoneyField v-model="item.price" label="Prijs" />
                     <PercentageField v-model="item.tax" label="BTW %" />
+                    <PercentageField
+                        v-model="item.discount"
+                        label="Korting in %"
+                    />
                 </div>
             </template>
 

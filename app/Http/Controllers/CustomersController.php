@@ -46,7 +46,7 @@ class CustomersController extends Controller
         $invoices = $this->sortByAttributes($invoices, $column);
 
         return inertia('Customers/Show', [
-            'customer' => $customer->load(['shippingAddress', 'billingAddress', 'mainContact', 'otherContacts']),
+            'customer' => $customer->load(['shippingAddress', 'billingAddress', 'contacts']),
             'invoices' => $invoices->values()->paginate(Invoice::PAGINATE_AMOUNT)
         ]);
     }
@@ -55,8 +55,15 @@ class CustomersController extends Controller
     {
         return $this->index()
             ->with([
-                'customer' => $customer->load(['shippingAddress', 'billingAddress', 'mainContact', 'otherContacts'])
+                'customer' => $customer->load(['shippingAddress', 'billingAddress', 'contacts'])
             ]);
+    }
+
+    public function restore(Customer $customer)
+    {
+        $customer->restore();
+
+        return back();
     }
 
     public function destroy(Customer $customer)

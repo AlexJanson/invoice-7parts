@@ -36,7 +36,7 @@ const customers = {
 <template>
     <OrderedTable :data="customers">
         <template v-slot="{ current }">
-            <td class="w-1/3 font-semibold">
+            <td class="w-1/3 pl-2 font-semibold">
                 <Link
                     class="underline"
                     :href="route('customer.show', { slug: current.slug })"
@@ -44,8 +44,10 @@ const customers = {
                     {{ current.name }}
                 </Link>
             </td>
-            <td class="w-1/3">{{ current.phone }}</td>
-            <td class="font-semibold">{{ formatMoney(current.due_amount) }}</td>
+            <td class="w-1/3 pl-2">{{ current.phone }}</td>
+            <td class="pl-2 font-semibold">
+                {{ formatMoney(current.due_amount) }}
+            </td>
         </template>
     </OrderedTable>
 </template>

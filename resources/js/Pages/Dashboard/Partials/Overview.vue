@@ -1,5 +1,7 @@
 <script setup>
 import StatisticBlock from '@/Components/StatisticBlock.vue'
+import { formatMoney } from '@/helpers'
+import { usePage } from '@inertiajs/vue3'
 </script>
 
 <template>
@@ -9,25 +11,31 @@ import StatisticBlock from '@/Components/StatisticBlock.vue'
         <StatisticBlock>
             <template #heading> Aantal klanten </template>
 
-            50
+            {{ usePage().props.customers }}
         </StatisticBlock>
 
         <StatisticBlock>
             <template #heading> Openstaand bedrag </template>
 
-            € 5.716,<span class="ml-1 text-3xl font-normal">65</span>
+            <!-- € 5.716,<span class="ml-1 text-3xl font-normal">65</span> -->
+            {{ formatMoney(usePage().props.dueAmount).split(',')[0] }},<span
+                class="ml-1 text-3xl font-normal"
+                >{{
+                    formatMoney(usePage().props.dueAmount).split(',')[1]
+                }}</span
+            >
         </StatisticBlock>
 
         <StatisticBlock>
             <template #heading> Aantal facturen </template>
 
-            22
+            {{ usePage().props.invoices }}
         </StatisticBlock>
 
         <StatisticBlock>
             <template #heading> Aantal producten </template>
 
-            80
+            {{ usePage().props.products }}
         </StatisticBlock>
     </div>
 </template>

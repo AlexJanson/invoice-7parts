@@ -8,6 +8,8 @@ import {
     TrashIcon,
     ChevronUpDownIcon,
     EyeIcon,
+    ArchiveBoxArrowDownIcon,
+    DocumentArrowDownIcon,
 } from '@heroicons/vue/24/solid'
 import {
     ArrowLongUpIcon,
@@ -22,7 +24,7 @@ import Dropdown from './Dropdown.vue'
 import DropdownLink from './DropdownLink.vue'
 import BaseTable from './BaseTable.vue'
 import SearchInput from './SearchInput.vue'
-import { Link, router } from '@inertiajs/vue3'
+import { Link, router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
     data: Object,
@@ -83,7 +85,9 @@ watch(
         })
 
         const url = props.data.route.parameter
-            ? `${route(route().current())}/${props.data.route.parameter}`
+            ? `${route(route().current(), {
+                  customer: usePage().props.customer,
+              })}`
             : route(route().current())
         router.get(url, newParams, {
             preserveScroll: true,
@@ -173,7 +177,10 @@ const showFilters = ref(false)
                 :align="th.align"
                 :class="th.class"
             >
-                <Dropdown :align="th.align ?? 'left'">
+                <Dropdown
+                    :align="th.align ?? 'left'"
+                    v-if="!th.hasOwnProperty('sortable')"
+                >
                     <template #trigger="{ open }">
                         <button
                             class="flex items-center rounded-lg px-2 py-1 outline-none transition duration-150 ease-in-out hover:bg-gray-100 focus:ring-2 focus:ring-indigo-500"
@@ -239,11 +246,18 @@ const showFilters = ref(false)
                         />
                     </template>
                 </Dropdown>
+
+                <span
+                    v-else
+                    class="flex items-center rounded-lg px-2 py-1 outline-none"
+                >
+                    {{ th.name }}
+                </span>
             </th>
             <th align="right" class="w-12"></th>
         </template>
 
-        <tr v-for="(item, idx) in data.rows.value" :key="idx" class="h-16">
+        <tr v-for="(item, idx) in data.rows.value" :key="idx" class="h-12">
             <td align="middle" class="w-12">
                 <Checkbox v-model:checked="checked[idx]" />
             </td>
@@ -276,6 +290,26 @@ const showFilters = ref(false)
                             </div>
                         </DropdownLink>
                         <DropdownLink
+                            as="a"
+                            v-if="
+                                data.route &&
+                                (route().current('invoice.*') ||
+                                    route().current('invoices.*') ||
+                                    route().current('dashboard'))
+                            "
+                            :href="
+                                route(
+                                    'invoice.download',
+                                    item[data.route.paramKey],
+                                )
+                            "
+                        >
+                            <div class="flex items-center">
+                                <DocumentArrowDownIcon class="mr-2 h-5 w-5" />
+                                Download PDF
+                            </div>
+                        </DropdownLink>
+                        <DropdownLink
                             :href="
                                 route(
                                     `${data.route.name.split('.')[0]}.edit`,
@@ -289,6 +323,28 @@ const showFilters = ref(false)
                             </div>
                         </DropdownLink>
                         <DropdownLink
+                            v-if="item.deleted_at && !shouldDelete"
+                            method="PATCH"
+                            :href="
+                                route(
+                                    `${data.route.name.split('.')[0]}.restore`,
+                                    item[data.route.paramKey],
+                                )
+                            "
+                            bg-class="hover:bg-red-600 focus:bg-red-600"
+                        >
+                            <div class="flex items-center">
+                                <ArchiveBoxArrowDownIcon
+                                    class="mr-2 h-5 w-5 transition duration-150 ease-in-out group-hover:text-white group-focus-visible:text-white"
+                                />
+                                <span
+                                    class="transition duration-150 ease-in-out group-hover:text-white group-focus-visible:text-white"
+                                    >Dearchiveren</span
+                                >
+                            </div>
+                        </DropdownLink>
+                        <DropdownLink
+                            v-else
                             method="DELETE"
                             :href="
                                 route(

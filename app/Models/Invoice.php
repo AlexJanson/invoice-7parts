@@ -14,7 +14,7 @@ class Invoice extends Model
 {
     use HasFactory, SoftDeletes;
 
-    const PAGINATE_AMOUNT = 8;
+    const PAGINATE_AMOUNT = 50;
 
     const STATUS_UNPAID = 'UNPAID';
     const STATUS_PARTIALLY_PAID = 'PARTIALLY PAID';
@@ -55,7 +55,7 @@ class Invoice extends Model
     {
         return Attribute::get(function () {
             return $this->items->reduce(function ($carry, $item) {
-                return $carry + $item->price * ($item->quantity / 100);
+                return $carry + $item->subtotal * (1 - $item->discount / 100);
             });
         });
     }
@@ -70,7 +70,7 @@ class Invoice extends Model
     public function total(): Attribute
     {
         return Attribute::get(function () {
-            return $this->items->sum('total') - $this->discount;
+            return round($this->items->sum('total'));
         });
     }
 
@@ -83,6 +83,7 @@ class Invoice extends Model
 
     public function updatePaymentStatus()
     {
+        $this->load('items');
         if (floor($this->total) == $this->dueAmount) {
             $this->update(['payment_status' => Invoice::STATUS_UNPAID]);
         } else if ($this->dueAmount > 0) {

@@ -20,7 +20,7 @@ class UpdateCustomer
             $customer->slug = Str::slug($validated['name']);
             $customer->email = $validated['email'];
             $customer->phone = $validated['phone'];
-            $customer->tax = $validated['tax_number'];
+            $customer->tax = $validated['tax_number'] ?? null;
             $customer->kvk = $validated['kvk_number'];
 
             $customer->save();
@@ -42,14 +42,26 @@ class UpdateCustomer
             }
             $customer->billingAddress->save();
 
-            foreach($validated['contacts'] as $contact) {
-                $dbContact = Contact::find($contact['id']);
-                $dbContact->name = $contact['name'];
-                $dbContact->email = $contact['email'];
-                $dbContact->phone = $contact['phone'];
-                $dbContact->default = $contact['default'];
+            $contactsToDelete = $customer->contacts->whereNotIn('id', collect($validated["contacts"] ?? [])->pluck("id"));
+            foreach ($contactsToDelete as $item) {
+                $contact = Contact::find($item["id"]);
+                $contact->customer()->dissociate();
+                $contact->delete();
+            }
 
-                $dbContact->save();
+            if (isset($validated['contacts'])) {
+                foreach($validated['contacts'] as $contact) {
+                    $dbContact = array_key_exists("id", $contact) 
+                        ? Contact::find($contact['id']) 
+                        : new Contact;
+                    $dbContact->name = $contact['name'];
+                    $dbContact->email = $contact['email'];
+                    $dbContact->phone = $contact['phone'];
+
+                    $dbContact->customer()->associate($customer);
+
+                    $dbContact->save();
+                }
             }
         });
     }

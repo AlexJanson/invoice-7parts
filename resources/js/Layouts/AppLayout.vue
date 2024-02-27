@@ -49,7 +49,10 @@ const logout = () => {
 
                         <NavLink
                             :href="route('customers.index')"
-                            :active="route().current('customers.index')"
+                            :active="
+                                route().current('customer.*') ||
+                                route().current('customers.*')
+                            "
                         >
                             <UsersIcon class="h-5 w-5" />
                             Klanten
@@ -57,26 +60,29 @@ const logout = () => {
 
                         <NavLink
                             :href="route('products.index')"
-                            :active="route().current('products.index')"
+                            :active="
+                                route().current('product.*') ||
+                                route().current('products.*')
+                            "
                         >
                             <CubeTransparentIcon class="h-5 w-5" />
                             Producten
                         </NavLink>
 
                         <NavLink
-                            :href="route('invoices.index')"
-                            :active="route().current('invoices.index')"
+                            :href="
+                                route('invoices.index', {
+                                    column: 'invoice-number',
+                                    direction: 'ASC',
+                                })
+                            "
+                            :active="
+                                route().current('invoice.*') ||
+                                route().current('invoices.*')
+                            "
                         >
                             <DocumentPlusIcon class="h-5 w-5" />
                             Facturen
-                        </NavLink>
-
-                        <NavLink
-                            :href="route('payments.index')"
-                            :active="route().current('payments.index')"
-                        >
-                            <CurrencyEuroIcon class="h-5 w-5" />
-                            Betalingen
                         </NavLink>
 
                         <NavLink

@@ -37,7 +37,7 @@ const products = {
 <template>
     <OrderedTable :data="products" should-delete>
         <template v-slot="{ current }">
-            <td class="font-semibold">
+            <td class="pl-2 font-semibold">
                 <Link
                     class="underline"
                     :href="route('product.show', { slug: current.slug })"
@@ -45,10 +45,10 @@ const products = {
                     {{ current.name }}
                 </Link>
             </td>
-            <td class="font-semibold">
-                {{ formatMoney(current.price_incl_tax) }}
+            <td class="pl-2 font-semibold">
+                {{ formatMoney(current.price) }}
             </td>
-            <td align="right">{{ current.created_at }}</td>
+            <td align="right" class="pr-4">{{ current.created_at }}</td>
         </template>
     </OrderedTable>
 </template>

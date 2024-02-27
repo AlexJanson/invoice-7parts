@@ -8,7 +8,7 @@ import SelectField from '@/Components/SelectField.vue'
 const form = useForm({
     name: null,
     price: 0,
-    tax: 0,
+    tax: 21,
     unit: {
         unit: 'PIECES',
         name: 'stuks',

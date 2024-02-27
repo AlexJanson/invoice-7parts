@@ -56,7 +56,10 @@ function submit() {
 
     customerForm.value.form.post(route('customer.store'), {
         preserveState: true,
-        onSuccess: () => slideOver.value.close(),
+        onSuccess: () => {
+            customerForm.value.form.reset()
+            slideOver.value.close()
+        },
     })
 }
 
