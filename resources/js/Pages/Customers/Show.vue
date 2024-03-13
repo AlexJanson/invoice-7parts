@@ -99,7 +99,7 @@ const invoices = computed(() => props.invoices.data)
                                 >Plaatsnaam</span
                             >
                             <span class="font-semibold"
-                                >{{ customer.shipping_address.city }},
+                                >{{ customer.shipping_address.city }}
                                 {{ customer.shipping_address.state }}</span
                             >
 
@@ -136,7 +136,7 @@ const invoices = computed(() => props.invoices.data)
                                 >Plaatsnaam</span
                             >
                             <span class="font-semibold"
-                                >{{ customer.billing_address.city }},
+                                >{{ customer.billing_address.city }}
                                 {{ customer.billing_address.state }}</span
                             >
 
@@ -163,39 +163,12 @@ const invoices = computed(() => props.invoices.data)
                     <span>Contactpersonen</span>
                 </h3>
 
-                <div class="ml-8">
-                    <h4 class="mb-8 text-lg font-semibold">
-                        Hoofdcontactpersoon
-                    </h4>
-
-                    <div class="grid w-1/2 grid-cols-2 gap-4">
-                        <span class="font-semibold text-gray-500">Naam</span>
-                        <span class="font-semibold">{{
-                            customer.main_contact.name
-                        }}</span>
-
-                        <span class="font-semibold text-gray-500">Email</span>
-                        <span class="font-semibold">{{
-                            customer.main_contact.email
-                        }}</span>
-
-                        <span class="font-semibold text-gray-500"
-                            >Telefoon</span
-                        >
-                        <span class="font-semibold">{{
-                            customer.main_contact.phone
-                        }}</span>
-                    </div>
-
-                    <h4 class="my-8 text-lg font-semibold">
-                        Overige contactpersonen
-                    </h4>
-
+                <div v-if="customer.contacts.length > 0" class="ml-8">
                     <div
                         class="divide-y-2 divide-gray-100 [&>*:first-child]:pb-6 [&>*:not(:first-child)]:py-6"
                     >
                         <div
-                            v-for="contact in customer.other_contacts"
+                            v-for="contact in customer.contacts"
                             class="grid w-1/2 grid-cols-2 gap-4"
                         >
                             <span class="font-semibold text-gray-500"
@@ -220,6 +193,13 @@ const invoices = computed(() => props.invoices.data)
                             }}</span>
                         </div>
                     </div>
+                </div>
+
+                <div
+                    v-else
+                    class="ml-8 cursor-default select-none text-sm text-gray-700"
+                >
+                    <span class="mt-2"> Er zijn geen contactpersonen. </span>
                 </div>
             </div>
 

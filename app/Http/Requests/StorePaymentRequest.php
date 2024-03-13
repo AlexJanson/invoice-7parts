@@ -38,7 +38,7 @@ class StorePaymentRequest extends FormRequest
             'amount' => 'required|min:1|numeric',
             'comments' => 'nullable|string',
             'invoice_id' => 'required|exists:invoices,id',
-            'customer_id' => 'required|exists:users,id'
+            'customer_id' => 'required|exists:customers,id'
         ];
     }
 }

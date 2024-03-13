@@ -11,7 +11,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    const PAGINATE_AMOUNT = 8;
+    const PAGINATE_AMOUNT = 50;
 
     protected $appends = [
         'price_incl_tax'

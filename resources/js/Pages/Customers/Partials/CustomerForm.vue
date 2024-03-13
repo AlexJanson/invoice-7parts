@@ -61,38 +61,20 @@ function setBillingToShippingAddress(value) {
 
 const contactDefaults = {
     name: 'Administratie',
-    email: 'administratie@example.com',
-    phone: '+31 0 612345678',
-    default: false,
+    email: '',
+    phone: '',
 }
 function addContact() {
     const newContact = structuredClone(contactDefaults)
-
-    if (selectedPerson.value === null) {
-        selectedPerson.value = newContact
-    }
 
     form.contacts.push(newContact)
 }
 function deleteContact(idx) {
     form.contacts.splice(idx, 1)
 }
-const selectedPerson = ref(null)
-watch(selectedPerson, (newContact, oldContact) => {
-    if (oldContact) {
-        const old = form.contacts.find(
-            (contact) => contact.id === oldContact.id,
-        )
-        old.default = 0
-    }
-
-    const target = form.contacts.find((contact) => contact.id === newContact.id)
-    target.default = 1
-})
 
 defineExpose({
     form,
-    selectedPerson,
     sameAsShippingAddress,
 })
 </script>
@@ -185,6 +167,23 @@ defineExpose({
 
         <h4 class="my-8 text-lg font-semibold">Factuuradres</h4>
 
+        <span class="col-span-2 mb-8 flex items-center gap-4">
+            <Checkbox
+                v-model:checked="sameAsShippingAddress"
+                class="mt-1 self-start"
+                id="sameAsShippingAddress"
+            />
+            <span class="w-1/2">
+                <label for="sameAsShippingAddress" class="block font-medium"
+                    >Zelfde als vestigingsadres</label
+                >
+                <span class="text-sm text-gray-500"
+                    >Maak het factuuradres hetzelfde als het
+                    vestigingsadres</span
+                >
+            </span>
+        </span>
+
         <div class="grid grid-cols-2 gap-8" v-if="!sameAsShippingAddress">
             <TextField
                 v-model="form.billingAddress.address"
@@ -245,22 +244,6 @@ defineExpose({
                 :disabled="sameAsShippingAddress"
             />
         </div>
-
-        <span class="col-span-2 mt-8 flex items-center gap-4">
-            <Checkbox
-                v-model:checked="sameAsShippingAddress"
-                class="mt-1 self-start"
-            />
-            <span class="w-1/2">
-                <span class="block font-medium"
-                    >Zelfde als vestigingsadres</span
-                >
-                <span class="text-sm text-gray-500"
-                    >Maak het factuuradres hetzelfde als het
-                    vestigingsadres</span
-                >
-            </span>
-        </span>
     </div>
 
     <div class="mb-8">
@@ -285,38 +268,40 @@ defineExpose({
             </SecondaryButton>
         </div>
 
-        <div
-            v-for="(_, idx) in form.contacts"
-            class="my-6 flex items-center justify-between gap-4"
-        >
-            <TextField
-                class="grow"
-                v-model="form.contacts[idx].name"
-                :error="form.errors[`contacts.${idx}.name`]"
-                label="Naam"
-            />
-            <TextField
-                class="grow"
-                v-model="form.contacts[idx].email"
-                :error="form.errors[`contacts.${idx}.email`]"
-                label="Email"
-            />
-            <TextField
-                class="grow"
-                v-model="form.contacts[idx].phone"
-                :error="form.errors[`contacts.${idx}.phone`]"
-                label="Telefoon"
-            />
-
-            <PrimaryButton
-                @click="deleteContact(idx)"
-                class="group shrink self-end bg-transparent text-gray-950 hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white focus:ring-red-600 active:bg-red-600 active:text-white"
+        <template v-if="form.contacts.length > 0">
+            <div
+                v-for="(_, idx) in form.contacts"
+                class="my-6 flex items-center justify-between gap-4"
             >
-                <XMarkIcon
-                    class="h-5 w-5 text-gray-950 transition duration-150 ease-in-out group-hover:text-white"
+                <TextField
+                    class="grow"
+                    v-model="form.contacts[idx].name"
+                    :error="form.errors[`contacts.${idx}.name`]"
+                    label="Naam"
                 />
-            </PrimaryButton>
-        </div>
+                <TextField
+                    class="grow"
+                    v-model="form.contacts[idx].email"
+                    :error="form.errors[`contacts.${idx}.email`]"
+                    label="Email"
+                />
+                <TextField
+                    class="grow"
+                    v-model="form.contacts[idx].phone"
+                    :error="form.errors[`contacts.${idx}.phone`]"
+                    label="Telefoon"
+                />
+
+                <PrimaryButton
+                    @click="deleteContact(idx)"
+                    class="group shrink self-end bg-transparent text-gray-950 hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white focus:ring-red-600 active:bg-red-600 active:text-white"
+                >
+                    <XMarkIcon
+                        class="h-5 w-5 text-gray-950 transition duration-150 ease-in-out group-hover:text-white"
+                    />
+                </PrimaryButton>
+            </div>
+        </template>
 
         <div
             v-if="form.contacts.length <= 0"
@@ -326,79 +311,6 @@ defineExpose({
             <span class="mt-4 text-sm text-gray-600"
                 >Nog geen contactpersonen toegevoegd.</span
             >
-        </div>
-
-        <div>
-            <h4 class="my-4 mt-12 text-lg font-semibold">
-                Hoofdcontactpersoon
-            </h4>
-
-            <Listbox
-                v-model="selectedPerson"
-                :disabled="form.contacts.length <= 0"
-                by="id"
-            >
-                <div class="relative mt-1">
-                    <ListboxButton
-                        class="relative w-2/5 rounded-md border border-gray-300 py-2 pl-3 pr-10 text-left shadow-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
-                    >
-                        <span class="block truncate" v-if="selectedPerson"
-                            >{{ selectedPerson.name }}
-                            <span class="italic text-gray-500"
-                                >({{ selectedPerson.email }})</span
-                            >
-                        </span>
-                        <span class="block truncate italic text-gray-500" v-else
-                            >Kies een hoofdcontactpersoon</span
-                        >
-                        <span
-                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-                        >
-                            <ChevronUpDownIcon
-                                class="h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                            />
-                        </span>
-                    </ListboxButton>
-
-                    <transition
-                        leave-active-class="transition duration-100 ease-in"
-                        leave-from-class="opacity-100"
-                        leave-to-class="opacity-0"
-                    >
-                        <ListboxOptions
-                            class="absolute mt-1 max-h-60 w-2/5 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-                        >
-                            <ListboxOption
-                                v-slot="{ active, selected }"
-                                v-for="contact in form.contacts"
-                                :key="contact.name"
-                                :value="contact"
-                                as="template"
-                            >
-                                <li
-                                    :class="[
-                                        active
-                                            ? 'bg-indigo-100 text-indigo-900'
-                                            : 'text-gray-900',
-                                        'relative cursor-default select-none py-2 pl-10 pr-4',
-                                    ]"
-                                >
-                                    <span
-                                        :class="[
-                                            selected
-                                                ? 'font-medium'
-                                                : 'font-normal',
-                                            'block truncate',
-                                        ]"
-                                        >{{ contact.name }}</span
-                                    >
-                                </li>
-                            </ListboxOption>
-                        </ListboxOptions>
-                    </transition>
-                </div>
-            </Listbox>
         </div>
     </div>
 </template>

@@ -1,7 +1,7 @@
 <script setup>
 import OrderedTable from '@/Components/OrderedTable.vue'
 import { formatMoney } from '@/helpers'
-import { Link } from '@inertiajs/vue3'
+// import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -15,14 +15,14 @@ const payments = {
             name: 'Datum',
             id: 'date',
         },
-        {
-            name: 'Klant',
-            id: 'customer',
-        },
-        {
-            name: 'Factuur #',
-            id: 'invoice-number',
-        },
+        // {
+        //     name: 'Klant',
+        //     id: 'customer',
+        // },
+        // {
+        //     name: 'Factuur #',
+        //     id: 'invoice-number',
+        // },
         {
             name: 'Bedrag',
             id: 'amount',
@@ -41,16 +41,16 @@ const payments = {
 <template>
     <OrderedTable :data="payments" should-delete>
         <template v-slot="{ current }">
-            <td>{{ current.payment_date }}</td>
-            <td class="w-1/3 font-semibold">
+            <td class="pl-2">{{ current.payment_date }}</td>
+            <!-- <td class="w-1/3 pl-2 font-semibold">
                 <Link
                     class="underline"
                     :href="route('customer.show', { slug: current.slug })"
                 >
                     {{ current.name }}
                 </Link>
-            </td>
-            <td class="font-semibold">
+            </td> -->
+            <!-- <td class="pl-2 font-semibold">
                 <Link
                     class="underline"
                     :href="
@@ -61,8 +61,8 @@ const payments = {
                 >
                     #{{ current.invoice_number }}
                 </Link>
-            </td>
-            <td class="font-semibold" align="right">
+            </td> -->
+            <td class="pr-4 font-semibold" align="right">
                 {{ formatMoney(current.amount) }}
             </td>
         </template>

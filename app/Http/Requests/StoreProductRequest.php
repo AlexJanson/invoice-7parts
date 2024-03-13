@@ -23,10 +23,10 @@ class StoreProductRequest extends FormRequest
     {
         return [
             "name" => "required|min:3|max:50",
-            "price" => "required|numeric|min:1",
+            "price" => "required|numeric|min:0",
             "tax" => "required|numeric|min:0",
             "unit" => "required|in:PIECES,HOURS",
-            "description" => "nullable|string"
+            "description" => "nullable|string|max:255"
         ];
     }
 }

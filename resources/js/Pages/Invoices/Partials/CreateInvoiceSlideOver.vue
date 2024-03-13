@@ -3,7 +3,7 @@ import ConfirmationSlideOver from '@/Components/ConfirmationSlideOver.vue'
 import { router, usePage } from '@inertiajs/vue3'
 import InvoiceItems from './InvoiceItems.vue'
 import InvoiceForm from './InvoiceForm.vue'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 const invoiceForm = ref(null)
 const items = ref(null)
@@ -14,6 +14,10 @@ const show = ref(false)
 function open() {
     router.visit(route('invoice.create'), {
         preserveState: true,
+        onSuccess: () =>
+            invoiceForm.value.form
+                .defaults('invoice_number', usePage().props.invoiceNumber)
+                .reset(),
     })
     slideOver.value.open()
 }
@@ -50,7 +54,23 @@ function submit() {
 
     invoiceForm.value.form.clearErrors()
 
-    console.log('TODO: submit the form', invoiceForm.value.form.data())
+    invoiceForm.value.form
+        .transform((data) => ({
+            ...data,
+            term: data.term?.month,
+            contact: data.contact?.id,
+            customer: data.customer?.id,
+            items: data.items?.map((item) => ({
+                ...item,
+                unit: item.unit.unit,
+            })),
+        }))
+        .post(route('invoice.store'), {
+            onSuccess: () => {
+                slideOver.value.close()
+                invoiceForm.value.form.reset()
+            },
+        })
 }
 
 defineExpose({

@@ -92,7 +92,7 @@ onMounted(() => {
                 state: c.billing_address.state,
                 country: c.billing_address.country,
             },
-            contacts: [c.main_contact].concat(c.other_contacts) ?? [],
+            contacts: c.contacts,
         })
 
         // Need to reset the form after updating the defaults!
@@ -101,7 +101,6 @@ onMounted(() => {
         customerForm.value.sameAsShippingAddress =
             Object.entries(c.shipping_address).toString() ===
             Object.entries(c.billing_address).toString()
-        customerForm.value.selectedPerson = customerForm.value.form.contacts[0]
 
         // Reset form again so the isDirty attribute gets set to false!
         customerForm.value.form.reset()

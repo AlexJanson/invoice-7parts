@@ -34,15 +34,5 @@ import { PlusIcon } from '@heroicons/vue/20/solid'
                 <span class="text-sm">Factuur</span>
             </div>
         </QuickActionButton>
-
-        <QuickActionButton
-            :href="route('payment.create')"
-            bg-class="bg-purple-500 hover:bg-purple-600"
-        >
-            <div class="flex items-center gap-0.5">
-                <PlusIcon class="h-4 w-4" />
-                <span class="text-sm">Betaling</span>
-            </div>
-        </QuickActionButton>
     </div>
 </template>

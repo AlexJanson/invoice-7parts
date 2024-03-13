@@ -21,10 +21,10 @@ const form = useForm({
     invoice_number: null,
     reference: null,
     term: null,
-    year: 2023,
+    year: new Date().getFullYear(),
     comments: null,
     items: [],
-    discount: null,
+    discount: 0,
 })
 
 const customers = computed(() => usePage().props.customers)
@@ -52,7 +52,24 @@ watch(
     },
 )
 
-const years = [{ year: 2023 }, { year: 2024 }]
+const years = Array(6)
+    .fill({ year: 2022 })
+    .map(({ year }, idx) => ({ year: year + idx }))
+
+const terms = [
+    { id: 0, month: 'Januari' },
+    { id: 1, month: 'Februari' },
+    { id: 2, month: 'Maart' },
+    { id: 3, month: 'April' },
+    { id: 4, month: 'Mei' },
+    { id: 5, month: 'Juni' },
+    { id: 6, month: 'Juli' },
+    { id: 7, month: 'Augustus' },
+    { id: 8, month: 'September' },
+    { id: 9, month: 'Oktober' },
+    { id: 10, month: 'November' },
+    { id: 11, month: 'December' },
+]
 
 defineExpose({
     form,
@@ -104,10 +121,7 @@ defineExpose({
                 :error="form.errors.reference"
             />
             <SelectField
-                :values="[
-                    { id: 1, month: 'Januari' },
-                    { id: 0, month: 'Februari' },
-                ]"
+                :values="terms"
                 :display-value="(item) => item?.month"
                 search-term="month"
                 v-model="form.term"

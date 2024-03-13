@@ -39,10 +39,6 @@ function update(value) {
             {{ label }}
         </label>
 
-        <div class="mb-2 text-sm text-gray-400" v-if="description">
-            {{ description }}
-        </div>
-
         <Money3Component
             :id="label"
             v-bind="config"
@@ -54,6 +50,10 @@ function update(value) {
             }"
             :disabled="disabled"
         />
+
+        <div class="mt-2 text-sm text-gray-400" v-if="description">
+            {{ description }}
+        </div>
 
         <div class="mt-2 text-sm text-red-600" v-if="error">
             {{ error }}

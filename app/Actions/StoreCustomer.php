@@ -22,7 +22,7 @@ class StoreCustomer
             $customer->slug = Str::slug($validated['name']);
             $customer->email = $validated['email'];
             $customer->phone = $validated['phone'];
-            $customer->tax = $validated['tax_number'];
+            $customer->tax = $validated['tax_number'] ?? null;
             $customer->kvk = $validated['kvk_number'];
 
             $shippingAddress = new Address;
@@ -52,9 +52,11 @@ class StoreCustomer
 
             $customer->save();
 
-            foreach($validated['contacts'] as $contact) {
-                $contact['customer_id'] = $customer->id;
-                Contact::create($contact);
+            if (isset($validated['contacts'])) {
+                foreach($validated['contacts'] as $contact) {
+                    $contact['customer_id'] = $customer->id;
+                    Contact::create($contact);
+                }
             }
         });
     }

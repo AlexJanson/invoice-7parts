@@ -7,6 +7,7 @@ import TextField from '@/Components/TextField.vue'
 import DatePicker from '@/Components/DatePicker.vue'
 import MoneyField from '@/Components/MoneyField.vue'
 import { startOfToday } from 'date-fns'
+import { formatMoney } from '@/helpers'
 
 const today = startOfToday()
 const form = useForm({
@@ -64,6 +65,7 @@ watch(
                 v-model="form.customer_id"
                 label="Klant"
                 :error="form.errors.customer_id"
+                disabled
             />
             <SelectField
                 :values="invoices ?? []"
@@ -71,14 +73,17 @@ watch(
                 search-term="invoice_number"
                 v-model="form.invoice_id"
                 label="Factuur"
-                :disabled="invoices.length === 0 || processing"
                 :loading="processing"
                 :error="form.errors.invoice_id"
+                disabled
             />
             <MoneyField
                 v-model="form.amount"
                 label="Bedrag"
                 :error="form.errors.amount"
+                :description="`Openstaand bedrag: ${formatMoney(
+                    form.invoice_id?.due_amount,
+                )}`"
             />
             <TextField
                 v-model="form.comments"
