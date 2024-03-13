@@ -116,8 +116,8 @@ Route::middleware([
     Route::delete('/invoices/{invoice:invoice_number}', [InvoicesController::class, 'destroy'])->name('invoice.destroy');
 
     /* Invoice PDF's */
-    Route::get('/invoices/{invoice:invoice_number}/download', [InvoicesController::class, 'download'])->name('invoice.download');
-    Route::get('/invoices/{invoice:invoice_number}/stream', [InvoicesController::class, 'stream'])->name('invoice.stream');
+    Route::get('/invoices/{invoice:invoice_number}/download/{locale?}', [InvoicesController::class, 'download'])->name('invoice.download');
+    Route::get('/invoices/{invoice:invoice_number}/stream/{locale?}', [InvoicesController::class, 'stream'])->name('invoice.stream');
 
     Route::get('/invoices/{invoice:invoice_number}/payments/create', [InvoicesController::class, 'createPayment'])->name('payment.create');
     Route::get('/payments/{payment:id}', [PaymentsController::class, 'show'])->name('payment.show');
@@ -126,10 +126,10 @@ Route::middleware([
     Route::delete('/payments/{payment:id}', [PaymentsController::class, 'destroy'])->name('payment.destroy');
 
     Route::get('/pdf', function() {
-        $pdf = Pdf::loadView('pdf.invoice', [
+        $pdf = Pdf::loadView('pdf.reminder', [
             "invoice" => Invoice::with(['customer' => function ($query) {
                 $query->withTrashed()->with('shippingAddress');
-            }])->find(1),
+            }])->find(2),
             "noAddress" => null
         ]);
         return $pdf->stream();

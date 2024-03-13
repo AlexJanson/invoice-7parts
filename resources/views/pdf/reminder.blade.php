@@ -10,11 +10,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
         /* Setting up the font */
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+        @import url('https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap');
 
         /* Base */
         html {
@@ -268,8 +264,8 @@
             padding: 0 35px 0 0;
         }
 
-        /* Period */
-        .period {
+        /* container */
+        .container {
             padding: 10px 35px 10px 35px;
         }
 
@@ -358,7 +354,7 @@
                 @endif
 
                 <td class="header-section-right invoice-details-container font-light">
-                    <h1 class="font-semibold text-3xl leading-7">Factuur</h1>
+                    <h1 class="font-semibold text-3xl leading-7">&nbsp;</h1>
                     <a class="text-sm" href="tel:+31202358823">+31 20 23 588 23</a>
                     <p class="text-sm">info@7parts.nl</p>
                     <p class="text-sm">www.7parts.nl</p>
@@ -425,60 +421,53 @@
             </table>
         </div>
 
-        <div class="period">
-            <h3 class="font-light">
-                Periode:
-                <span class="text-base font-semibold pl-12">{{ $invoice->term }} {{ $invoice->year }}</span>
-            </h3>
+        <div class="container" style="padding-top: 2.5rem; line-height: .9rem;">
+            <strong>
+                Diemen, {{ (new \Carbon\Carbon(\Carbon\Carbon::now()))->isoFormat("dddd D MMMM YYYY") }}
+            </strong>
+
+            <br> <br>
+
+            <strong>
+                Betreft: Openstaande nota('s)
+            </strong>
+
+            <br> <br>
+
+            <p>Geachte heer/mevrouw,</p>
+
+            <br>
+
+            <p>Volgens onze administratieve gegevens staat de hieronder weergegeven facturen, 
+waarvan de betalingstermijn verstreken is, nog open.</p>
+
+            <br>
+
+            <p>Het is waarschijnlijk aan uw aandacht ontsnapt, daarom verzoeken wij u om het 
+openstaande bedrag per omgaande aan ons over te maken op bankrekeningnummer 
+NL20 INGB 0003 9768 54 of NL46 RABO 0324 5781 05 t.n.v. 7Parts IT Services B.V.</p>
+
+            <br> <br>
+
+            <p>Als u het verschuldigde bedrag inmiddels betaald heeft, danken wij u hiervoor en kunt 
+u deze brief als niet verzonden beschouwen.</p>
+
+            <br>
+
+            <p>Met vriendelijke groet, <br>
+7Parts IT Services B.V.</p>
         </div>
-    
-        <table width="100%" class="items-table">
+
+        <table width="100%" class="items-table" style="padding-top: 2rem;">
             <tr class="items-table-heading text-cyan-700 border-gray-300">
-                <th class="text-left font-medium">Item</th>
-                <th width="12%" class="text-right font-medium" style="padding-right: 10px;">Aantal</th>
-                <th width="10%" class="text-right font-medium" style="padding-right: 10px;">Prijs</th>
-                @if ($invoice->items->filter(function ($item) {
-                        return $item->discount > 0;
-                    })->isNotEmpty())
-                    <th width="8%" class="text-right font-medium">Korting</th>
-                @endif
-                {{-- <th width="8%" class="text-right font-medium">BTW</th> --}}
+                <th class="text-left font-medium">Datum</th>
+                <th width="12%" class="text-right font-medium" style="padding-right: 10px;">Factuurnr.</th>
+                <th width="10%" class="text-right font-medium" style="padding-right: 10px;">Subtotaal</th>
+                <th width="12%" class="text-right font-medium">BTW</th>
                 <th width="12%" class="text-right font-medium">Totaal</th>
             </tr>
             <tbody class="items-body">
-                @php
-                    $index = 0
-                @endphp
-                @foreach ($invoice->items as $item)
-                    <tr class="item-row">
-                        <td style="padding-right: 5px;">
-                            <span class="text-sm font-semibold">{{ $item->name }}</span><br>
-                            <span class="text-gray-600">{{ $item->description }}</span>
-                        </td>
-                        <td class="text-right text-sm" style="padding-right: 10px;">
-                            {{ number_format($item->quantity / 100, 2, ",", "") }} {{ $item->unit === 'PIECES' ? 'st.' : 'u.' }} 
-                        </td>
-                        <td class="text-right text-sm" style="padding-right: 10px;">
-                            {!! \App\Helpers\format_money_pdf($item->price) !!}
-                        </td>
-                        @if ($invoice->items->filter(function ($item) {
-                        return $item->discount > 0;
-                    })->isNotEmpty())
-                        <td class="text-right text-sm">
-                            {{ $item->discount }} %
-                        </td>
-                        @endif
-                        {{-- <td class="text-right text-sm">
-                            {{ $item->tax }} %
-                        </td> --}}
-                        <td class="text-right text-sm">
-                            {!! \App\Helpers\format_money_pdf($item->subtotal * (1 - $item->discount / 100)) !!}
-                        </td>
-                    </tr>
-                    @php
-                        $index += 1
-                    @endphp
-                @endforeach
+                {{-- TODO: Loop over all the invoices and display their data corosponding to the table heads. --}}
             </tbody>
         </table>
     
@@ -510,15 +499,6 @@
                 </tbody>
             </table>
         </div>
-    
-        <div class="notes">
-            @isset($invoice->comments)
-                <h3 class="font-medium">Opmerkingen</h3>
-                <p class="text-sm font-light leading-3 mt-3">{{ $invoice->comments }}</p>
-            @endisset
-        </div>
-
-        <h2 class="text-xl font-light text-center absolute" style="bottom: 100px; width: 100%;">Gelieve binnen 14 dagen betalen</h2>
     </main>
 </body>
 

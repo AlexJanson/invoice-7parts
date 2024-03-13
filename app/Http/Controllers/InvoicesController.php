@@ -109,18 +109,36 @@ class InvoicesController extends Controller
         ]);
     }
 
-    public function download(Invoice $invoice)
+    public function download(Invoice $invoice, ?string $locale = null)
     {
-        $pdf = Pdf::loadView('pdf.invoice', [
+        $pdfView = null;
+        switch ($locale) {
+            case 'en':
+                $pdfView = 'pdf.invoice_en';
+                break;
+            default: 
+                $pdfView = 'pdf.invoice';
+        }
+
+        $pdf = Pdf::loadView($pdfView, [
             "invoice" => $invoice->load(['customer.shippingAddress']),
             "noAddress" => null
         ]);
         return $pdf->download('Factuur ' . $invoice->invoice_number . ' ' . $invoice->customer->name . '.pdf');
     }
 
-    public function stream(Invoice $invoice)
+    public function stream(Invoice $invoice, ?string $locale = null)
     {
-        $pdf = Pdf::loadView('pdf.invoice', [
+        $pdfView = null;
+        switch ($locale) {
+            case 'en':
+                $pdfView = 'pdf.invoice_en';
+                break;
+            default: 
+                $pdfView = 'pdf.invoice';
+        }
+
+        $pdf = Pdf::loadView($pdfView, [
             "invoice" => $invoice->load(['customer.shippingAddress']),
             "noAddress" => null
         ]);

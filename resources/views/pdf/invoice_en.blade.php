@@ -1,5 +1,5 @@
 @php
-    App::setLocale('nl');
+    App::setLocale('en');
 @endphp
 
 <!DOCTYPE html>
@@ -358,7 +358,7 @@
                 @endif
 
                 <td class="header-section-right invoice-details-container font-light">
-                    <h1 class="font-semibold text-3xl leading-7">Factuur</h1>
+                    <h1 class="font-semibold text-3xl leading-7">Invoice</h1>
                     <a class="text-sm" href="tel:+31202358823">+31 20 23 588 23</a>
                     <p class="text-sm">info@7parts.nl</p>
                     <p class="text-sm">www.7parts.nl</p>
@@ -372,7 +372,7 @@
         <table width="85%">
             <tr>
                 <td>
-                    <p>BTW nr:</p>
+                    <p>TAX nr:</p>
                     <p>KVK nr:</p> 
                 </td>
                 <td>
@@ -403,17 +403,17 @@
                 <tr>
                     <td width="45%" class="align-top font-light leading-3" style="padding-left: 35px;">
                         <h1 class="text-2xl font-bold mb-2" style="visibility: hidden;">{{ $invoice->customer->name }}</h1>
-                        <p class="text-lg">Factuurnummer: <span class="font-bold">{{ $invoice->invoice_number }}</span></p>
+                        <p class="text-lg">Invoice number: <span class="font-bold">{{ $invoice->invoice_number }}</span></p>
                         @isset($invoice->reference)
-                            <p class="text-lg leading-4">Referentie: {{ $invoice->reference }}</p>
+                            <p class="text-lg leading-4">Reference: {{ $invoice->reference }}</p>
                         @endisset
-                        <p class="text-lg leading-4">Datum: {{ (new \Carbon\Carbon($invoice->getRawOriginal('invoice_date')))->isoFormat("D MMMM, YYYY") }}</p>
+                        <p class="text-lg leading-4">Date: {{ (new \Carbon\Carbon($invoice->getRawOriginal('invoice_date')))->isoFormat("D MMMM, YYYY") }}</p>
                     </td>
                     <td width="10%"></td>
                     <td width="45%" class="align-top font-light leading-3">
                         <h1 class="text-2xl font-bold mb-2">{{ $invoice->customer->name }}</h1>
                         @isset($invoice->contact)
-                            <p class="text-lg">TAV: {{ $invoice->contact->name }}</p>
+                            <p class="text-lg">BILLED TO: {{ $invoice->contact->name }}</p>
                         @endisset
                         <p class="text-lg">{{ $invoice->customer->shippingAddress->address }}</p>
                         <p class="text-lg">{{ $invoice->customer->shippingAddress->zipcode }} {{ $invoice->customer->shippingAddress->city }}</p>
@@ -427,7 +427,7 @@
 
         <div class="period">
             <h3 class="font-light">
-                Periode:
+                Term:
                 <span class="text-base font-semibold pl-12">{{ $invoice->term }} {{ $invoice->year }}</span>
             </h3>
         </div>
@@ -435,15 +435,15 @@
         <table width="100%" class="items-table">
             <tr class="items-table-heading text-cyan-700 border-gray-300">
                 <th class="text-left font-medium">Item</th>
-                <th width="12%" class="text-right font-medium" style="padding-right: 10px;">Aantal</th>
-                <th width="10%" class="text-right font-medium" style="padding-right: 10px;">Prijs</th>
+                <th width="12%" class="text-right font-medium" style="padding-right: 10px;">Amount</th>
+                <th width="10%" class="text-right font-medium" style="padding-right: 10px;">Price</th>
                 @if ($invoice->items->filter(function ($item) {
                         return $item->discount > 0;
                     })->isNotEmpty())
-                    <th width="8%" class="text-right font-medium">Korting</th>
+                    <th width="8%" class="text-right font-medium">Discount</th>
                 @endif
-                {{-- <th width="8%" class="text-right font-medium">BTW</th> --}}
-                <th width="12%" class="text-right font-medium">Totaal</th>
+                {{-- <th width="8%" class="text-right font-medium">Tax</th> --}}
+                <th width="12%" class="text-right font-medium">Total</th>
             </tr>
             <tbody class="items-body">
                 @php
@@ -486,25 +486,25 @@
             <table width="100%" class="total-table">
                 <tbody>
                     <tr>
-                        <td class="pr-20 font-medium text-sm">Subtotaal</td>
+                        <td class="pr-20 font-medium text-sm">Subtotal</td>
                         <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoice->subtotal) !!}</td>
                     </tr>
                     
                     <tr>
-                        <td class="font-medium text-sm">BTW</td>
+                        <td class="font-medium text-sm">Tax</td>
                         <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoice->tax) !!}</td>
                     </tr>
                     
                     {{-- TODO: different discount types. --}}
                     {{-- @if($invoice->discount_val > 0)
                         <tr>
-                            <td class="font-medium text-sm">Korting</td>
+                            <td class="font-medium text-sm">Discount</td>
                             <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoice->discount) !!}</td>
                         </tr>
                     @endif --}}
 
                     <tr>
-                        <td class="font-semibold text-xl text-cyan-700">Totaal</td>
+                        <td class="font-semibold text-xl text-cyan-700">Total</td>
                         <td class="font-semibold text-right text-xl text-indigo-600">{!! \App\Helpers\format_money_pdf($invoice->total) !!}</td>
                     </tr>
                 </tbody>
@@ -513,12 +513,12 @@
     
         <div class="notes">
             @isset($invoice->comments)
-                <h3 class="font-medium">Opmerkingen</h3>
+                <h3 class="font-medium">Comments</h3>
                 <p class="text-sm font-light leading-3 mt-3">{{ $invoice->comments }}</p>
             @endisset
         </div>
 
-        <h2 class="text-xl font-light text-center absolute" style="bottom: 100px; width: 100%;">Gelieve binnen 14 dagen betalen</h2>
+        <h2 class="text-xl font-light text-center absolute" style="bottom: 100px; width: 100%;">Please pay within 14 days</h2>
     </main>
 </body>
 

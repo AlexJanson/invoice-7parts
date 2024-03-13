@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import InvoiceItems from './Partials/InvoiceItems.vue'
 import BaseTable from '@/Components/BaseTable.vue'
@@ -11,6 +11,7 @@ import {
 import Dropdown from '@/Components/Dropdown.vue'
 import DropdownLink from '@/Components/DropdownLink.vue'
 import { formatMoney } from '@/helpers'
+import Toggle from '@/Components/Toggle.vue'
 
 const props = defineProps({
     invoice: Object,
@@ -22,6 +23,15 @@ const footer = reactive({
     discount: props.invoice.discount,
     total: props.invoice.total,
 })
+
+const showEnglishInvoice = ref(false)
+
+const invoiceRoute = computed(() =>
+    route('invoice.stream', {
+        invoice: props.invoice,
+        locale: showEnglishInvoice.value ? 'en' : null,
+    }),
+)
 </script>
 
 <template>
@@ -204,9 +214,13 @@ const footer = reactive({
             </div>
 
             <div class="col-span-6 mb-20">
+                <Toggle class="mb-4 ml-8" v-model="showEnglishInvoice">
+                    <span>Engels</span>
+                </Toggle>
+
                 <iframe
                     class="h-[40rem] w-full"
-                    :src="route('invoice.stream', { invoice })"
+                    :src="invoiceRoute"
                     frameborder="0"
                 ></iframe>
             </div>

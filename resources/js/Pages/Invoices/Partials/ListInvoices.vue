@@ -58,6 +58,7 @@ const invoices = {
     route: {
         name: 'invoice.show',
         paramKey: 'invoice_number',
+        paramName: 'invoice',
     },
 }
 </script>

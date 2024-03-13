@@ -265,7 +265,7 @@ const showFilters = ref(false)
             <slot :current="item" />
 
             <td align="right" class="w-12">
-                <Dropdown>
+                <Dropdown width="64">
                     <template #trigger>
                         <button
                             type="button"
@@ -298,15 +298,39 @@ const showFilters = ref(false)
                                     route().current('dashboard'))
                             "
                             :href="
-                                route(
-                                    'invoice.download',
-                                    item[data.route.paramKey],
-                                )
+                                route('invoice.download', {
+                                    [data.route.paramName ||
+                                    data.route.paramKey]:
+                                        item[data.route.paramKey],
+                                    locale: null,
+                                })
                             "
                         >
                             <div class="flex items-center">
                                 <DocumentArrowDownIcon class="mr-2 h-5 w-5" />
                                 Download PDF
+                            </div>
+                        </DropdownLink>
+                        <DropdownLink
+                            as="a"
+                            v-if="
+                                data.route &&
+                                (route().current('invoice.*') ||
+                                    route().current('invoices.*') ||
+                                    route().current('dashboard'))
+                            "
+                            :href="
+                                route('invoice.download', {
+                                    [data.route.paramName ||
+                                    data.route.paramKey]:
+                                        item[data.route.paramKey],
+                                    locale: 'en',
+                                })
+                            "
+                        >
+                            <div class="flex items-center">
+                                <DocumentArrowDownIcon class="mr-2 h-5 w-5" />
+                                Download PDF (EN)
                             </div>
                         </DropdownLink>
                         <DropdownLink
