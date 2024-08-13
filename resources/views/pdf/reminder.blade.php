@@ -6,11 +6,11 @@
 <html lang="en">
 
 <head>
-    <title>Factuur {{ $invoice->invoice_number }} {{ $invoice->customer->name }}</title>
+    <title>Openstaande factuur {{ $customer->name }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
         /* Setting up the font */
-        @import url('https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap');
+        /* @import url('https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap'); */
 
         /* Base */
         html {
@@ -398,23 +398,23 @@
             <table width="100%">
                 <tr>
                     <td width="45%" class="align-top font-light leading-3" style="padding-left: 35px;">
-                        <h1 class="text-2xl font-bold mb-2" style="visibility: hidden;">{{ $invoice->customer->name }}</h1>
-                        <p class="text-lg">Factuurnummer: <span class="font-bold">{{ $invoice->invoice_number }}</span></p>
+                        <h1 class="text-2xl font-bold mb-2" style="visibility: hidden;">{{ $customer->name }}</h1>
+                        <p class="text-lg"><span class="font-bold"></span></p>
                         @isset($invoice->reference)
-                            <p class="text-lg leading-4">Referentie: {{ $invoice->reference }}</p>
+                            <p class="text-lg leading-4"></p>
                         @endisset
-                        <p class="text-lg leading-4">Datum: {{ (new \Carbon\Carbon($invoice->getRawOriginal('invoice_date')))->isoFormat("D MMMM, YYYY") }}</p>
+                        <p class="text-lg leading-4"></p>
                     </td>
                     <td width="10%"></td>
                     <td width="45%" class="align-top font-light leading-3">
-                        <h1 class="text-2xl font-bold mb-2">{{ $invoice->customer->name }}</h1>
-                        @isset($invoice->contact)
-                            <p class="text-lg">TAV: {{ $invoice->contact->name }}</p>
+                        <h1 class="text-2xl font-bold mb-2">{{ $customer->name }}</h1>
+                        @isset($customer->contact)
+                            <p class="text-lg">TAV: {{ $customer->contact->name }}</p>
                         @endisset
-                        <p class="text-lg">{{ $invoice->customer->shippingAddress->address }}</p>
-                        <p class="text-lg">{{ $invoice->customer->shippingAddress->zipcode }} {{ $invoice->customer->shippingAddress->city }}</p>
-                        @if ($invoice->customer->shippingAddress->country != 'Netherlands' && $invoice->customer->shippingAddress->country != 'The Netherlands' && $invoice->customer->shippingAddress->country != 'Nederland')
-                            <p class="text-lg">{{ $invoice->customer->shippingAddress->country }}</p>
+                        <p class="text-lg">{{ $customer->shippingAddress->address }}</p>
+                        <p class="text-lg">{{ $customer->shippingAddress->zipcode }} {{ $customer->shippingAddress->city }}</p>
+                        @if ($customer->shippingAddress->country != 'Netherlands' && $customer->shippingAddress->country != 'The Netherlands' && $customer->shippingAddress->country != 'Nederland')
+                            <p class="text-lg">{{ $customer->shippingAddress->country }}</p>
                         @endif
                     </td>
                 </tr>
@@ -476,25 +476,17 @@ u deze brief als niet verzonden beschouwen.</p>
                 <tbody>
                     <tr>
                         <td class="pr-20 font-medium text-sm">Subtotaal</td>
-                        <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoice->subtotal) !!}</td>
+                        <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoices->sum('subtotal')) !!}</td>
                     </tr>
                     
                     <tr>
                         <td class="font-medium text-sm">BTW</td>
-                        <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoice->tax) !!}</td>
+                        <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoices->sum('tax')) !!}</td>
                     </tr>
-                    
-                    {{-- TODO: different discount types. --}}
-                    {{-- @if($invoice->discount_val > 0)
-                        <tr>
-                            <td class="font-medium text-sm">Korting</td>
-                            <td class="text-right text-sm">{!! \App\Helpers\format_money_pdf($invoice->discount) !!}</td>
-                        </tr>
-                    @endif --}}
 
                     <tr>
                         <td class="font-semibold text-xl text-cyan-700">Totaal</td>
-                        <td class="font-semibold text-right text-xl text-indigo-600">{!! \App\Helpers\format_money_pdf($invoice->total) !!}</td>
+                        <td class="font-semibold text-right text-xl text-indigo-600">{!! \App\Helpers\format_money_pdf($invoices->sum('total')) !!}</td>
                     </tr>
                 </tbody>
             </table>

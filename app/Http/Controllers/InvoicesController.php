@@ -124,7 +124,7 @@ class InvoicesController extends Controller
             "invoice" => $invoice->load(['customer.shippingAddress']),
             "noAddress" => null
         ]);
-        return $pdf->download('Factuur ' . $invoice->invoice_number . ' ' . $invoice->customer->name . '.pdf');
+        return $pdf->download(($locale == 'en' ? 'Invoice ' : 'Factuur ') . $invoice->invoice_number . ' ' . $invoice->customer->name . '.pdf');
     }
 
     public function stream(Invoice $invoice, ?string $locale = null)

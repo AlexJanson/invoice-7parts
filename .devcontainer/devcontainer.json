@@ -16,7 +16,6 @@
 				"onecentlin.laravel-blade",
 				"bmewburn.vscode-intelephense-client",
                 "Vue.volar",
-                "Vue.vscode-typescript-vue-plugin",
                 "dbaeumer.vscode-eslint",
                 "esbenp.prettier-vscode",
                 "ZixuanChen.vitest-explorer",

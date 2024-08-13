@@ -10,11 +10,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
         /* Setting up the font */
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap');
+        /* @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap'); */
 
         /* Base */
         html {

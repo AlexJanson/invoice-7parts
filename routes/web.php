@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\InvoicesExport;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\InvoicesController;
@@ -127,10 +128,11 @@ Route::middleware([
 
     Route::get('/pdf', function() {
         $pdf = Pdf::loadView('pdf.reminder', [
-            "invoice" => Invoice::with(['customer' => function ($query) {
+            "invoices" => Invoice::with(['customer' => function ($query) {
                 $query->withTrashed()->with('shippingAddress');
-            }])->find(2),
-            "noAddress" => null
+            }])->dueInvoices()->get(),
+            "noAddress" => null,
+            "customer" => Customer::find(1)
         ]);
         return $pdf->stream();
     });
@@ -143,5 +145,9 @@ Route::middleware([
             "noAddress" => true
         ]);
         return $pdf->stream();
+    });
+
+    Route::get('/csv', function() {
+        return (new InvoicesExport(2024, 2))->download('invoices.csv');
     });
 });
