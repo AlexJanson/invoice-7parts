@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
+use App\Models\Payment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -42,5 +44,23 @@ class InvoiceFactory extends Factory
             'customer_id' => Customer::factory(),
             'contact_id' => null,
         ];
+    }
+
+    public function withItems(int $count = 1): static
+    {
+        return $this->afterCreating(function (Invoice $invoice) use ($count) {
+            $invoice->items()->saveMany(InvoiceItem::factory()->count($count)->make([
+                'invoice_id' => $invoice->id
+            ]));
+        });
+    }
+
+    public function withPayments(int $count = 1): static
+    {
+        return $this->afterCreating(function (Invoice $invoice) use ($count) {
+            $invoice->payments()->saveMany(Payment::factory()->count($count)->make([
+                'invoice_id' => $invoice->id
+            ]));
+        });
     }
 }
