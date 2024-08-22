@@ -15,7 +15,7 @@ class InvoicesController extends Controller
 {
     use WithSort;
 
-    public function index() 
+    public function index()
     {
         $this->validateSort(['date', 'invoice-number', 'customer', 'paid', 'due-amount', 'total']);
 
@@ -116,7 +116,7 @@ class InvoicesController extends Controller
             case 'en':
                 $pdfView = 'pdf.invoice_en';
                 break;
-            default: 
+            default:
                 $pdfView = 'pdf.invoice';
         }
 
@@ -134,7 +134,7 @@ class InvoicesController extends Controller
             case 'en':
                 $pdfView = 'pdf.invoice_en';
                 break;
-            default: 
+            default:
                 $pdfView = 'pdf.invoice';
         }
 

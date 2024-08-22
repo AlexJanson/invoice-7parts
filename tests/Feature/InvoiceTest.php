@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Invoice;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -131,4 +132,16 @@ test('retrieves due invoices correctly', function () {
         ->toContain($dueInvoiceButPartiallyPaid->invoice_number)
         ->not->toContain($notDueInvoice->invoice_number)
         ->not->toContain($dueInvoiceButPaid->invoice_number);
+});
+
+test('can download an invoice', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $invoice = Invoice::factory()->withItems(3)->create();
+
+    $response = $this->get('/invoices/' . $invoice->invoice_number . '/download/nl');
+
+    $invoiceName = 'Factuur ' . $invoice->invoice_number . ' ' . $invoice->customer->name . '.pdf';
+    $response->assertDownload($invoiceName);
 });
